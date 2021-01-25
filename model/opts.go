@@ -1,6 +1,6 @@
 package model
 
-import "github.com/zxysilent/logs"
+import logs "github.com/sirupsen/logrus"
 
 // Opts 配置
 type Opts struct {

@@ -1,0 +1,12 @@
+[website]
+title = "Hades300's Blog"
+explain = "Mind Drawer"
+email = "474208547@qq.com"
+
+[wechat]
+appid = "appid"
+secret = "secret"
+
+[weibo]
+username = "破水河妖"
+profile_url = "https://weibo.com/u/6624859820"

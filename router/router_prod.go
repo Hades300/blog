@@ -4,7 +4,6 @@ package router
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/zxysilent/logs"
 )
 
 const AppJsUrl = "/static/js/app.min.js"

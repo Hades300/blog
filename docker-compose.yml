@@ -1,0 +1,15 @@
+version: "2"
+services:
+  mysql:
+    image: mysql
+    container_name: blog_mysql
+    ports:
+      - 3306:3306
+    volumes:
+    - ./data/mysql:/var/lib/mysql
+    environment:
+      MYSQL_PASSWORD: "hades300"
+      MYSQL_USER: "hades300"
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "blog"
+

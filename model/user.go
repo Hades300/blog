@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -55,7 +56,9 @@ func (rl Role) IsAtv() bool {
 //UserByNum 通过账号获取用户信息
 func UserByNum(num string) (*User, bool) {
 	mod := &User{}
+	fmt.Print(num)
 	has, _ := Db.Where("num=?", num).Get(mod)
+	fmt.Print(mod)
 	return mod, has
 }
 

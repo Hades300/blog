@@ -1,0 +1,22 @@
+[app]
+mode = "dev"
+addr = ":88"
+srv = "http://127.0.0.1:8085"
+jwt_key = "HopeNoOneGuess"
+jwt_exp = 8
+
+[database]
+host = "127.0.0.1"
+port = 3306
+user = "blog"
+passwd = "123456"
+dbname = "blog"
+params = "charset=utf8&parseTime=true"
+
+[xorm]
+idle = 4
+open = 8
+show = true
+sync = false
+cache_enable = false
+cache_count = 1000

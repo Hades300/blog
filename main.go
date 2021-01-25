@@ -1,14 +1,14 @@
 package main
 
 import (
-	"blog/conf"
 	"blog/model"
 	"blog/router"
+	"blog/utils"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/zxysilent/logs"
+	logs "github.com/sirupsen/logrus"
 )
 
 // @Title Blog’s Api文档
@@ -21,7 +21,7 @@ import (
 // @BasePath /
 func main() {
 	logs.Info("app initializing")
-	conf.Init()
+	utils.Init()
 	model.Init()
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
@@ -29,5 +29,4 @@ func main() {
 	go router.RunApp()
 	<-quit
 	logs.Info("app quitted")
-	logs.Flush()
 }

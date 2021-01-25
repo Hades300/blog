@@ -1,8 +1,8 @@
 package model
 
 import (
-	"blog/conf"
-	"log"
+	"blog/utils"
+	logs "github.com/sirupsen/logrus"
 	"strings"
 
 	"xorm.io/xorm"
@@ -10,7 +10,6 @@ import (
 
 	// 数据库驱动
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/zxysilent/logs"
 )
 
 // Db 数据库操作句柄
@@ -18,23 +17,23 @@ var Db *xorm.Engine
 
 func Init() {
 	// 初始化数据库操作的 Xorm
-	db, err := xorm.NewEngine("mysql", conf.App.Dsn())
+	db, err := xorm.NewEngine("mysql", utils.Conf.Dsn())
 	if err != nil {
-		log.Fatalln("数据库 dsn:", err.Error())
+		logs.Fatalln("数据库 dsn:", err.Error())
 	}
 	if err = db.Ping(); err != nil {
-		log.Fatalln("数据库 ping:", err.Error())
+		logs.Fatalln("数据库 ping:", err.Error())
 	}
-	db.SetMaxIdleConns(conf.App.Xorm.Idle)
-	db.SetMaxOpenConns(conf.App.Xorm.Open)
+	db.SetMaxIdleConns(utils.Conf.Xorm.Idle)
+	db.SetMaxOpenConns(utils.Conf.Xorm.Open)
 	// 是否显示sql执行的语句
-	db.ShowSQL(conf.App.Xorm.Show)
-	if conf.App.Xorm.CacheEnable {
+	db.ShowSQL(utils.Conf.Xorm.Show)
+	if utils.Conf.Xorm.CacheEnable {
 		// 设置xorm缓存
-		cacher := caches.NewLRUCacher(caches.NewMemoryStore(), conf.App.Xorm.CacheCount)
+		cacher := caches.NewLRUCacher(caches.NewMemoryStore(), utils.Conf.Xorm.CacheCount)
 		db.SetDefaultCacher(cacher)
 	}
-	if conf.App.Xorm.Sync {
+	if utils.Conf.Xorm.Sync {
 		err := db.Sync2(new(User), new(Cate), new(Tag), new(Post), new(PostTag), new(Opts))
 		if err != nil {
 			logs.Fatal("数据库 sync:", err.Error())

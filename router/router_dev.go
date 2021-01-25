@@ -5,14 +5,14 @@ package router
 import (
 
 	// docs
-	_ "blog/docs"
+	//_ "blog/docs"
 	"bytes"
 	"sync"
 	"time"
 
 	"github.com/labstack/echo/v4"
+	logs "github.com/sirupsen/logrus"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	"github.com/zxysilent/logs"
 )
 
 const AppJsUrl = "/static/js/app.js"
@@ -21,9 +21,7 @@ const AppCssUrl = "/static/css/app.css"
 var pool *sync.Pool
 
 func init() {
-	logs.SetLevel(logs.DEBUG)
-	logs.SetCallInfo(true)
-	logs.SetConsole(true)
+	logs.SetLevel(logs.DebugLevel)
 	pool = &sync.Pool{
 		New: func() interface{} {
 			return bytes.NewBuffer(make([]byte, 512))

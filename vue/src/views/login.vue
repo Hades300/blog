@@ -91,7 +91,7 @@ export default {
 						num: this.dataForm.num,
 						vcode: this.dataForm.vcode,
 						vreal: this.dataForm.vreal,
-						passwd: md5(this.dataForm.passwd).substr(1, 30)
+						passwd: md5(this.dataForm.passwd)
 					};
 					apiLogin(data).then((resp) => {
 						if (resp.code == 200) {

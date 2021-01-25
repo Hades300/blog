@@ -1,9 +1,9 @@
 package router
 
 import (
-	"blog/conf"
-	"blog/internal/jwt"
 	"blog/model"
+	utils2 "blog/utils"
+	"blog/utils/jwt"
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
@@ -19,11 +19,14 @@ import (
 	"github.com/zxysilent/utils"
 )
 
+// 自定义的模板函数映射表
 var funcMap template.FuncMap
 
 func init() {
 	funcMap = template.FuncMap{"str2html": Str2html, "str2js": Str2js, "date": Date, "md5": Md5}
 }
+
+// midRecover 这是一个处理错误（输出到标准输出）并使得上下文报错的中间件
 func midRecover(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		defer func() {
@@ -43,7 +46,7 @@ func midRecover(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-// HTTPErrorHandler 全局错误捕捉
+// HTTPErrorHandler 全局错误捕捉函数 根据错误类型输出错误response
 func HTTPErrorHandler(err error, ctx echo.Context) {
 	if !ctx.Response().Committed {
 		if he, ok := err.(*echo.HTTPError); ok {
@@ -51,7 +54,8 @@ func HTTPErrorHandler(err error, ctx echo.Context) {
 				if strings.HasPrefix(ctx.Request().URL.Path, "/static") || strings.HasPrefix(ctx.Request().URL.Path, "/dist") {
 					ctx.NoContent(404)
 				} else if strings.HasPrefix(ctx.Request().URL.Path, "/api") || strings.HasPrefix(ctx.Request().URL.Path, "/adm") {
-					ctx.JSON(utils.NewErrSvr("系统错误", he.Message))
+					panic(err)
+					ctx.JSON(utils.NewErrSvr("系统错误", fmt.Sprintf("URI %s", he.Message)))
 				} else {
 					ctx.HTML(404, html404)
 				}
@@ -64,7 +68,7 @@ func HTTPErrorHandler(err error, ctx echo.Context) {
 	}
 }
 
-// 跨越配置
+// 跨越配置 中间件
 var crosConfig = middleware.CORSConfig{
 	AllowOrigins: []string{"*"},
 	AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
@@ -97,7 +101,7 @@ func (t *TplRender) Render(w io.Writer, name string, data interface{}, ctx echo.
 	//开发模式
 	//每次强制读取模板
 	//每次强制加载函数
-	if conf.App.IsDev() {
+	if utils2.Conf.IsDev() {
 		t.templates = utils.LoadTmpl("./views", funcMap)
 	}
 	return t.templates.ExecuteTemplate(w, name, data)
@@ -133,7 +137,7 @@ func initRender() *TplRender {
 	}
 }
 
-// midJwt 中间件-jwt验证
+// midJwt 中间件-jwt验证,若成功就将uid和jwtAuth结构体放在上下文中，若失败就返回JSON
 func midJwt(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		tokenRaw := ctx.FormValue("token") // query/form 查找 token
@@ -145,7 +149,7 @@ func midJwt(next echo.HandlerFunc) echo.HandlerFunc {
 			}
 			tokenRaw = tokenRaw[7:] // Bearer token len("Bearer ")==7
 		}
-		jwtAuth, err := jwt.Verify(tokenRaw, conf.App.Jwtkey)
+		jwtAuth, err := jwt.Verify(tokenRaw, utils2.Conf.App.JwtKey)
 		if err == nil {
 			ctx.Set("auth", jwtAuth)
 			ctx.Set("uid", jwtAuth.Id)
